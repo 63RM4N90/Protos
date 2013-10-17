@@ -1,5 +1,6 @@
 package it.itba.edu.ar.protos;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -9,6 +10,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Properties;
 
 /*
  * This is a simple Socket server that listens on a port and prints whatever it receives 
@@ -16,19 +18,27 @@ import java.nio.channels.WritableByteChannel;
 
 public class Server {
 
-	private static final Integer port = 8888;
+	private static Properties prop = new Properties();
+	private static String propfilename = "proxy.properties";
+
+	private static String port;
+	private static String address;
 
 	public static void main(String[] args) {
+
+		getProperties();
+
 		// Create socket
 		ServerSocketChannel ssc = null;
 
 		try {
 			// Set address
-			InetAddress addr = InetAddress.getByName("127.0.0.1");
+			InetAddress addr = InetAddress.getByName(address);
 			// Open socket
 			ssc = ServerSocketChannel.open();
 			// bind socket to port
-			ssc.socket().bind(new InetSocketAddress(addr, port));
+			ssc.socket().bind(
+					new InetSocketAddress(addr, Integer.valueOf(port)));
 			// configure as non blocking
 			ssc.configureBlocking(false);
 
@@ -78,6 +88,16 @@ public class Server {
 				wbc.write(b);
 			}
 			b.clear();
+		}
+	}
+
+	private static void getProperties() {
+		try {
+			prop.load(new FileInputStream(propfilename));
+			port = prop.getProperty("port");
+			address = prop.getProperty("address");
+		} catch (IOException e) {
+			System.out.println("Unable to load " + propfilename + " file");
 		}
 	}
 }
