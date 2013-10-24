@@ -2,7 +2,7 @@ package it.itba.edu.ar.protos.handler;
 
 import it.itba.edu.ar.protos.Interfaces.PacketHandler;
 import it.itba.edu.ar.protos.model.HttpPacket;
-import it.itba.edu.ar.protos.model.PacketData;
+import it.itba.edu.ar.protos.model.Data;
 import it.itba.edu.ar.protos.model.ProxyHeader;
 
 public class PacketHandlerImplementation implements PacketHandler{
@@ -21,13 +21,13 @@ public class PacketHandlerImplementation implements PacketHandler{
 	}
 
 	@Override
-	public boolean readHeaders(PacketData data) {
+	public boolean readHeaders(Data data) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void analizePacket(PacketData data) {
+	public void analizePacket(Data data) {
 		// TODO Auto-generated method stub
 	}
 
@@ -38,7 +38,7 @@ public class PacketHandlerImplementation implements PacketHandler{
 	}
 
 	@Override
-	public void parseHeaders(PacketData data) {
+	public void parseHeaders(Data data) {
 		packet.parsePacket(data);
 	}
 
@@ -54,7 +54,7 @@ public class PacketHandlerImplementation implements PacketHandler{
 	}
 
 	@Override
-	public PacketData blockedHtml(String cause) {
+	public Data blockedHtml(String cause) {
 		// TODO Auto-generated method stub
 		return null;
 	}
