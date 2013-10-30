@@ -12,12 +12,13 @@ public class Attachment {
 	private ByteBuffer buffer;
 	private HttpPacket packet;
 	
+	private int bufferSize = 1024;
+	
 	public Attachment(HttpPacket packet) {
-		lineBuffer = new byte[1024];
+		lineBuffer = new byte[bufferSize];
 		lineBufferIndex = 0;
-		buffer = ByteBuffer.allocate(1024);
+		buffer = ByteBuffer.allocate(bufferSize);
 		this.packet = packet;
-		
 	}
 	
 	public State getState() {
@@ -50,6 +51,14 @@ public class Attachment {
 
 	public void incrementLineBufferIndex(int i) {
 		lineBufferIndex += i;
+		if (lineBufferIndex == this.bufferSize) {
+			this.bufferSize *= 2;
+			byte[] auxBuffer = new byte[this.bufferSize];
+			for (int j = 0 ; i < this.lineBufferIndex ; i++) {
+				auxBuffer[j] = this.lineBuffer[j];
+			}
+			this.lineBuffer = auxBuffer;
+		}
 	}
 
 	public HttpPacket getPacket() {

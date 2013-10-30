@@ -43,12 +43,17 @@ public enum State {
 						ret = State.BODY;
 						System.out.println("------");
 					} else {
-						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
+						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex() - 1);
 			            System.out.println(header);
 						attach.getPacket().parseHeader(header);
 					}
 					attach.setLineBufferIndex(0);
 					break;
+				}
+				if(attach.getLineBufferIndex() == 1024) {
+					byte[] buf = attach.getLineBuffer();
+					for(byte b : buf)
+						System.out.print((char)b);
 				}
 				attach.setElemInLineBuffer(c, attach.getLineBufferIndex());
 		        attach.incrementLineBufferIndex(1);

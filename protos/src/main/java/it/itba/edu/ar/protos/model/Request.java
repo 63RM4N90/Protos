@@ -29,14 +29,26 @@ public class Request extends HttpPacket{
 	public boolean parseHeader(String line) {
 		if(line.contains(":")){
 			String[] header = line.split(":");
-			addHeader(header[0], header[1]);
+			addHeader(header[0].trim(), header[1].trim());
 			return validateHeader(header);
-		} 
+		}
 		return false;
 	}
 	
 	public boolean validateHeader(String[] header) {
-		return true;//TODO implement validator
+		
+		if(header[0].toLowerCase().contains("host")) {
+			if(header.length == 3)	{
+				port = Integer.parseInt(header[2].trim());
+			} else {
+				port = 80;
+			}
+		} else if(header[0].toLowerCase().contains("content-type")) {
+			hasBody = true;
+		} else if(header.length != 2 ) {
+			return false;
+		}
+		return true;
 	}
 
 	public boolean parseContent(Data data) {
@@ -54,9 +66,9 @@ public class Request extends HttpPacket{
 		this.method = method;
 	}
 	
-	public String getUri(){
-		return uri;
-	}
+	//	public void getUri(){
+	//		return uri;
+	//	}
 	
 	public void setUri(String method) {
 		this.uri = method;

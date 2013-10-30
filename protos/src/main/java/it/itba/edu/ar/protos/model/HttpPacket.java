@@ -1,15 +1,17 @@
 package it.itba.edu.ar.protos.model;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class HttpPacket {
 	private Map<String, String> headers;
-	private boolean hasBody;
+	protected boolean hasBody;
 	private int byteAmount;
 	private Data content;
 	private String httpVersion;
+	protected int port;
 
 	
 	public HttpPacket(){
@@ -19,7 +21,8 @@ public abstract class HttpPacket {
 	
 	public boolean parseHeader(String line) {
 		if(line.contains(":")){
-			String[] header = line.split(":");
+			String trimmedLine = line.trim();
+			String[] header = trimmedLine.split(":");
 			addHeader(header[0], header[1]);
 			return validateHeader(header);
 		} 
@@ -66,6 +69,15 @@ public abstract class HttpPacket {
 	public boolean parseFirstLine(String operation) {
 		/*should not implement*/
 		return false;
+	}
+
+	public InetSocketAddress getUri() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getPort() {
+		return port;
 	}
 	
 }
