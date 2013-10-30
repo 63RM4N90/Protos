@@ -4,6 +4,9 @@ import it.itba.edu.ar.protos.Interfaces.TCPProtocol;
 import it.itba.edu.ar.protos.attachment.RequestAttachment;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -15,6 +18,7 @@ public class TCPRequestHandler implements TCPProtocol  {
 	@Override
 	public void handleAccept(SelectionKey key) throws IOException {
 		SocketChannel clntChan = ((ServerSocketChannel) key.channel()).accept();
+		clntChan.configureBlocking(false);
 		clntChan.register(key.selector(), SelectionKey.OP_READ, new RequestAttachment());	
 	}
 
@@ -22,19 +26,46 @@ public class TCPRequestHandler implements TCPProtocol  {
 	public void handleRead(SelectionKey key) throws IOException {
 		SocketChannel clnChan = (SocketChannel) key.channel();
 		RequestAttachment reqAttach = (RequestAttachment) key.attachment();
-		final long bytesread = clnChan.read(reqAttach.getBuffer());
-		if (bytesread == -1) {
-			clnChan.close();
-		} else {
-			reqAttach.setState(reqAttach.getState().handleRead(clnChan, reqAttach));
+		while(reqAttach.getBuffer().hasRemaining()) {
+			final long bytesread = clnChan.read(reqAttach.getBuffer());
+			if (bytesread == -1) {
+				System.out.println("te cierro el channel");
+				clnChan.close();
+				break;
+			} else {
+				if(reqAttach.getState() == State.BODY && !reqAttach.getPacket().hasBody()){
+					break;
+				}
+				reqAttach.setState(reqAttach.getState().handleRead(clnChan, reqAttach));
+			}
 		}
 		
+		reqAttach.setState(State.INIT);
+		key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 	}
 	
 	@Override
 	public void handleWrite(SelectionKey key) throws IOException {
-		// TODO Auto-generated method stub
+		RequestAttachment reqAttach = (RequestAttachment) key.attachment();
+		String url = reqAttach.getPacket().getHeader("Host");
+		int port = reqAttach.getPacket().getUri().getPort();
 		
+		SocketChannel sc = SocketChannel.open();
+		sc.configureBlocking(false);
+		
+		sc.register(key.selector(), SelectionKey.OP_READ, TU ATTACHMENT);
+		
+		sc.connect(new InetSocketAddress(url, port));
+		
+		while(!sc.finishConnect())
+			System.out.println(".");
+		
+		sc.write(UN BUFFER);
+		
+		sc.register(key.selector(), SelectionKey.OP_READ);
+		
+		
+		// TODO Auto-generated method stub
 	}
 
 }

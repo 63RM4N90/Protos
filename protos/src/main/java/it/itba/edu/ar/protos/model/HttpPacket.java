@@ -17,7 +17,7 @@ public abstract class HttpPacket {
 		byteAmount = 0;
 	}
 	
-	private boolean parseHeader(String line) {
+	public boolean parseHeader(String line) {
 		if(line.contains(":")){
 			String[] header = line.split(":");
 			addHeader(header[0], header[1]);
@@ -26,7 +26,7 @@ public abstract class HttpPacket {
 		return false;
 	}
 	
-	private boolean validateHeader(String[] header) {
+	public boolean validateHeader(String[] header) {
 		/*should not implement*/
 		return true;
 	}
@@ -59,5 +59,13 @@ public abstract class HttpPacket {
 		this.httpVersion = httpVersion;
 	}
 	
+	public boolean hasBody() {
+		return hasBody;
+	}
+
+	public boolean parseFirstLine(String operation) {
+		/*should not implement*/
+		return false;
+	}
 	
 }

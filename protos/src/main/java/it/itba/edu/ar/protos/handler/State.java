@@ -6,20 +6,24 @@ import java.nio.channels.SocketChannel;
 
 public enum State {
 	INIT {
+		
 		@Override
 		protected State handleRead(final SocketChannel channel, final Attachment attach) {
 		    State ret = this;
 		    attach.getBuffer().flip();
-		    
 		    while(attach.getBuffer().hasRemaining()) {
 		        final byte c = attach.getBuffer().get();
 		        if(c == '\n') {
-		            final String operacion = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
+		            final String operation = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
 		            attach.setLineBufferIndex(0);
 		            ret = State.HEADERS;
-		            System.out.println(operacion);
+		            System.out.println(operation);
+		            attach.getPacket().parseFirstLine(operation);
 		            break;
 		        }
+		        attach.setElemInLineBuffer(c, attach.getLineBufferIndex());
+		        attach.incrementLineBufferIndex(1);
+		        
 		    }
 		    attach.getBuffer().compact();
 		    return ret;
@@ -27,28 +31,30 @@ public enum State {
 	 
 	},
 	HEADERS {
-
+		
 		@Override
 		protected State handleRead(SocketChannel channel, Attachment attach) {
 			State ret = this;
 			attach.getBuffer().flip();
-
 			while (attach.getBuffer().hasRemaining()) {
 				final byte c = attach.getBuffer().get();
 				if (c == '\n') {
 					if (attach.getLineBufferIndex() == 1) {
 						ret = State.BODY;
+						System.out.println("------");
 					} else {
-						final String operacion = new String(attach.getLineBuffer(), 0,
-								attach.getLineBufferIndex());
-						System.out.println(operacion);
+						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
+			            System.out.println(header);
+						attach.getPacket().parseHeader(header);
 					}
 					attach.setLineBufferIndex(0);
+					break;
 				}
+				attach.setElemInLineBuffer(c, attach.getLineBufferIndex());
+		        attach.incrementLineBufferIndex(1);
 			}
 			attach.getBuffer().compact();
 			return ret;
-
 		}
 	},
 	BODY {

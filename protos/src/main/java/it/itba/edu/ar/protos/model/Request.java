@@ -5,19 +5,28 @@ public class Request extends HttpPacket{
 	private String method;
 	private String uri;
 	
-	private boolean parseFirstLine(String first) {
+	public boolean parseFirstLine(String first) {
 		String[] params = first.split(" ");
+		if(params.length != 3) {
+			return false;
+		}
 		method = params[0];
 		uri = params[1];
 		setHttpVersion(params[2]);	
 		return validateFirstLine();	
 	}
 	
-	private boolean validateFirstLine(){
+	public boolean validateFirstLine(){
+		if(!(method.equals("GET") || method.equals("POST") || method.equals("HEAD"))) {
+			return false;
+		}
+		if(!getHttpVersion().startsWith("HTTP/")) {
+			return false;
+		}
 		return true;//TODO implement validator
 	}
 	
-	private boolean parseHeader(String line) {
+	public boolean parseHeader(String line) {
 		if(line.contains(":")){
 			String[] header = line.split(":");
 			addHeader(header[0], header[1]);
@@ -26,11 +35,11 @@ public class Request extends HttpPacket{
 		return false;
 	}
 	
-	private boolean validateHeader(String[] header) {
+	public boolean validateHeader(String[] header) {
 		return true;//TODO implement validator
 	}
 
-	private boolean parseContent(Data data) {
+	public boolean parseContent(Data data) {
 		//TODO y aca que carajo hacemooo
 		return false;
 	}

@@ -4,7 +4,8 @@ public class Response extends HttpPacket {
 	private String status;
 	private String statusMessage;
 	
-	private boolean parseFirstLine(String first) {
+	@Override
+	public boolean parseFirstLine(String first) {
 		int spaces = 0;
 		int startFrom = 0;
 		
@@ -28,15 +29,15 @@ public class Response extends HttpPacket {
 		return validateFirstLine();	
 	}
 	
-	private boolean validateFirstLine(){
+	public boolean validateFirstLine(){
 		return true;//TODO implement validator
 	}
 	
-	private boolean validateHeader(String[] header) {
+	public boolean validateHeader(String[] header) {
 		return true;//TODO implement validator
 	}
 
-	private boolean parseContent(Data data) {
+	public boolean parseContent(Data data) {
 		//TODO y aca que carajo hacemooo
 		return false;
 	}

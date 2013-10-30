@@ -1,6 +1,7 @@
 package it.itba.edu.ar.protos.attachment;
 
 import it.itba.edu.ar.protos.handler.State;
+import it.itba.edu.ar.protos.model.HttpPacket;
 
 import java.nio.ByteBuffer;
 
@@ -8,14 +9,14 @@ public class Attachment {
 	private State state = State.INIT;
 	private byte[] lineBuffer;
 	private int lineBufferIndex;
-	private int bufferSize; 
 	private ByteBuffer buffer;
+	private HttpPacket packet;
 	
-	public Attachment() {
+	public Attachment(HttpPacket packet) {
 		lineBuffer = new byte[1024];
 		lineBufferIndex = 0;
-		this.bufferSize = bufferSize;
 		buffer = ByteBuffer.allocate(1024);
+		this.packet = packet;
 		
 	}
 	
@@ -41,5 +42,17 @@ public class Attachment {
 	
 	public int getLineBufferIndex() {
 		return lineBufferIndex;
+	}
+
+	public void setElemInLineBuffer(byte c, int i) {
+		lineBuffer[i] = c;
+	}
+
+	public void incrementLineBufferIndex(int i) {
+		lineBufferIndex += i;
+	}
+
+	public HttpPacket getPacket() {
+		return packet;
 	}
 }
