@@ -45,6 +45,7 @@ public class Request extends HttpPacket{
 			}
 		} else if(header[0].toLowerCase().contains("content-type")) {
 			hasBody = true;
+			initializeBody(Integer.parseInt(header[1].trim()));
 		} else if(header.length != 2 ) {
 			return false;
 		}
@@ -66,9 +67,9 @@ public class Request extends HttpPacket{
 		this.method = method;
 	}
 	
-	//	public void getUri(){
-	//		return uri;
-	//	}
+	public String getUri(){
+		return uri;
+	}
 	
 	public void setUri(String method) {
 		this.uri = method;

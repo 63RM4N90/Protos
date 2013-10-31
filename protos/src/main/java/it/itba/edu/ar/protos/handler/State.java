@@ -17,7 +17,8 @@ public enum State {
 		            final String operation = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
 		            attach.setLineBufferIndex(0);
 		            ret = State.HEADERS;
-		            System.out.println(operation);
+		            //System.out.println(operation);
+		            attach.determinePacketType(operation);
 		            attach.getPacket().parseFirstLine(operation);
 		            break;
 		        }
@@ -44,16 +45,11 @@ public enum State {
 						System.out.println("------");
 					} else {
 						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex() - 1);
-			            System.out.println(header);
+			           // System.out.println(header);
 						attach.getPacket().parseHeader(header);
 					}
 					attach.setLineBufferIndex(0);
 					break;
-				}
-				if(attach.getLineBufferIndex() == 1024) {
-					byte[] buf = attach.getLineBuffer();
-					for(byte b : buf)
-						System.out.print((char)b);
 				}
 				attach.setElemInLineBuffer(c, attach.getLineBufferIndex());
 		        attach.incrementLineBufferIndex(1);
@@ -66,7 +62,21 @@ public enum State {
 
 		@Override
 		protected State handleRead(SocketChannel channel, Attachment attach) {
-			return this;
+			State ret = this;
+			attach.getBuffer().flip();
+			final int bytesToRead = attach.getPacket().getBodyAmount();
+			int i = 0;
+			byte[] body = attach.getPacket().getBody();
+			while(bytesToRead > 0 && attach.getBuffer().hasRemaining()) {
+				final byte b = attach.getBuffer().get();
+				body[i] = b;
+				i++;
+				System.out.println("--begin-body--");
+				System.out.print(b);
+				System.out.println("--end-body--");
+			}
+			ret = State.INIT;
+			return ret;
 
 		}
 	}

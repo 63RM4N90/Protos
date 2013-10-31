@@ -1,6 +1,6 @@
 package it.itba.edu.ar.protos.proxy;
 import it.itba.edu.ar.protos.Interfaces.TCPProtocol;
-import it.itba.edu.ar.protos.handler.TCPRequestHandler;
+import it.itba.edu.ar.protos.handler.TCPConnectionHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,7 +24,7 @@ public class ProxyServer {
         listnChannel.socket().bind(new InetSocketAddress(1234));
         listnChannel.configureBlocking(false); 
         listnChannel.register(selector, SelectionKey.OP_ACCEPT);
-        TCPProtocol protocol = new TCPRequestHandler();
+        TCPProtocol protocol = new TCPConnectionHandler();
         
         while (true) { 
             if (selector.select(TIMEOUT) == 0) {

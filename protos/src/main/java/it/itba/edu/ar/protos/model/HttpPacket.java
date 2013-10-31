@@ -11,12 +11,14 @@ public abstract class HttpPacket {
 	private int byteAmount;
 	private Data content;
 	private String httpVersion;
+	private byte[] body;
 	protected int port;
 
 	
 	public HttpPacket(){
 		headers = new HashMap<String,String>();
 		byteAmount = 0;
+		hasBody = false;
 	}
 	
 	public boolean parseHeader(String line) {
@@ -71,13 +73,21 @@ public abstract class HttpPacket {
 		return false;
 	}
 
-	public InetSocketAddress getUri() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public int getPort() {
 		return port;
 	}
+
+	public int getBodyAmount() {
+		String l = headers.get("content-length");
+		return Integer.parseInt(l);
+	}
 	
+	public byte[] getBody() {
+		return body;
+	}
+	
+	protected void initializeBody(int i) {
+		body = new byte[i];
+	}
+
 }
