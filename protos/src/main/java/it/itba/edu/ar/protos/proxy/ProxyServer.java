@@ -25,7 +25,7 @@ public class ProxyServer {
         listnChannel.configureBlocking(false); 
         listnChannel.register(selector, SelectionKey.OP_ACCEPT);
         TCPProtocol protocol = new TCPConnectionHandler();
-        
+        try {
         while (true) { 
             if (selector.select(TIMEOUT) == 0) {
                 System.out.println(".");
@@ -35,19 +35,25 @@ public class ProxyServer {
             while (keyIter.hasNext()) {
                 SelectionKey key = keyIter.next();
                 if (key.isAcceptable()) {
+                	Thread.sleep(3000);
                 	System.out.println("\nA");
                     protocol.handleAccept(key);
                 }
                 if (key.isReadable()) {
+                	Thread.sleep(3000);
                 	System.out.println("\nR");
                     protocol.handleRead(key);
                 }
                 if (key.isValid() && key.isWritable()) {
                 	System.out.println("\nW");
+                	Thread.sleep(3000);
                     protocol.handleWrite(key);
                 }
                 keyIter.remove();
             }
+        }
+        } catch(Exception e) {
+        	
         }
     }
 }

@@ -56,6 +56,11 @@ public class TCPConnectionHandler implements TCPProtocol  {
 		sc.connect(new InetSocketAddress(url, port));
 		
 		while(!sc.finishConnect());
+		System.out.println("lo que se mando----------------------------------------");
+		for(byte b : attach.getPacket().generatePacket(attach.getPacketSize()).array()) {
+			System.out.print((char)b);
+		}
+		System.out.println("------------------------------------");
 		
 		sc.write(attach.getPacket().generatePacket(attach.getPacketSize()));
 		
