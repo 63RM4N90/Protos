@@ -1,5 +1,8 @@
 package it.itba.edu.ar.protos.model;
 
+import java.nio.ByteBuffer;
+import java.util.Set;
+
 public class Request extends HttpPacket{
 	
 	private String method;
@@ -75,4 +78,12 @@ public class Request extends HttpPacket{
 		this.uri = method;
 	}
 
+	@Override
+	public void generateFirstLine(ByteBuffer packet) {
+		packet.put(method.getBytes());
+		packet.put(" ".getBytes());
+		packet.put(uri.getBytes());
+		packet.put(" ".getBytes());
+		packet.put(getHttpVersion().getBytes());
+	}
 }

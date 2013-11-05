@@ -1,5 +1,7 @@
 package it.itba.edu.ar.protos.model;
 
+import java.nio.ByteBuffer;
+
 public class Response extends HttpPacket {
 	private String status;
 	private String statusMessage;
@@ -40,5 +42,11 @@ public class Response extends HttpPacket {
 	public boolean parseContent(Data data) {
 		//TODO y aca que carajo hacemooo
 		return false;
+	}
+
+	@Override
+	public void generateFirstLine(ByteBuffer packet) {
+		// TODO Auto-generated method stub
+		
 	}
 }

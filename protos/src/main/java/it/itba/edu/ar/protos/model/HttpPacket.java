@@ -1,6 +1,6 @@
 package it.itba.edu.ar.protos.model;
 
-import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +11,7 @@ public abstract class HttpPacket {
 	private int byteAmount;
 	private Data content;
 	private String httpVersion;
-	private byte[] body;
+	private ByteBuffer body;
 	protected int port;
 
 	
@@ -82,12 +82,31 @@ public abstract class HttpPacket {
 		return Integer.parseInt(l);
 	}
 	
-	public byte[] getBody() {
+	public ByteBuffer getBody() {
 		return body;
 	}
 	
 	protected void initializeBody(int i) {
-		body = new byte[i];
+		body = ByteBuffer.allocateDirect(i);
 	}
 
+	public ByteBuffer generatePacket(int size) {
+		ByteBuffer packet = ByteBuffer.allocate(size);
+		generateFirstLine(packet);
+		
+		Set<String> headers = getHeaderNames();
+		for(String h : headers){
+			packet.put(h.getBytes());
+			packet.put(": ".getBytes());
+			packet.put(getHeader(h).getBytes());
+			packet.put("\r\n".getBytes());
+		}
+		packet.put("\r\n".getBytes());
+		if(hasBody) {
+			packet.put(getBody());
+		}
+		return packet;
+	}
+	
+	public abstract void generateFirstLine(ByteBuffer packet);
 }

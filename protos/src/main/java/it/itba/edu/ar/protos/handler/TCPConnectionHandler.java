@@ -25,14 +25,6 @@ public class TCPConnectionHandler implements TCPProtocol  {
 	public void handleRead(SelectionKey key) throws IOException {
 		SocketChannel clnChan = (SocketChannel) key.channel();
 		Attachment attach = (Attachment) key.attachment();
-		System.out.println("--begin-read-buffer--");
-		clnChan.read(attach.getBuffer());
-		byte[] a = attach.getBuffer().array();
-		for(byte c : a){
-			System.out.print((char)c);
-		}
-		System.out.print("\n");
-		System.out.println("--end-read-Buffer--");
 		while(attach.getBuffer().hasRemaining()) {
 			long bytesread = clnChan.read(attach.getBuffer());
 			if (bytesread == -1) {
@@ -61,21 +53,13 @@ public class TCPConnectionHandler implements TCPProtocol  {
 		sc.configureBlocking(false);
 		
 		sc.register(key.selector(), SelectionKey.OP_READ, attach);
-		System.out.println(url);
-		System.out.println(port);
 		sc.connect(new InetSocketAddress(url, port));
 		
-		while(!sc.finishConnect()); // do nothing
-		System.out.println("--begin-write-Buffer--");
-		byte[] a = attach.getBuffer().array();
-		for(byte c : a){
-			System.out.print((char)c);
-		}
-		System.out.print("\n");
-		System.out.println("--end-write-Buffer--");
+		while(!sc.finishConnect());
 		
-		sc.write(attach.getBuffer());
+		sc.write(attach.getPacket().generatePacket(attach.getPacketSize()));
 		
 		sc.register(key.selector(), SelectionKey.OP_READ, new Attachment());
 	}
+
 }

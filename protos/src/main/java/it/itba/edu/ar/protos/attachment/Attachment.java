@@ -13,6 +13,7 @@ public class Attachment {
 	private int lineBufferIndex;
 	private ByteBuffer buffer;
 	private HttpPacket packet;
+	private int packetSize;
 	
 	private int bufferSize = 1024;
 	
@@ -72,5 +73,13 @@ public class Attachment {
 
 	public HttpPacket getPacket() {
 		return packet;
+	}
+	
+	public int getPacketSize() {
+		return packetSize;
+	}
+	
+	public void incrementPacketSize(int amount) {
+		packetSize += amount;
 	}
 }

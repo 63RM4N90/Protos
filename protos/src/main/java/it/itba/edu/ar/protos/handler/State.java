@@ -2,6 +2,7 @@ package it.itba.edu.ar.protos.handler;
 
 import it.itba.edu.ar.protos.attachment.Attachment;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public enum State {
@@ -15,9 +16,10 @@ public enum State {
 		        final byte c = attach.getBuffer().get();
 		        if(c == '\n') {
 		            final String operation = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
+		            attach.incrementPacketSize(operation.length() + 2);
 		            attach.setLineBufferIndex(0);
 		            ret = State.HEADERS;
-		            //System.out.println(operation);
+		            System.out.println(operation);
 		            attach.determinePacketType(operation);
 		            attach.getPacket().parseFirstLine(operation);
 		            break;
@@ -43,9 +45,11 @@ public enum State {
 					if (attach.getLineBufferIndex() == 1) {
 						ret = State.BODY;
 						System.out.println("------");
+						attach.incrementPacketSize(2);
 					} else {
 						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex() - 1);
-			           // System.out.println(header);
+			            System.out.println(header);
+						attach.incrementPacketSize(header.length() + 2);
 						attach.getPacket().parseHeader(header);
 					}
 					attach.setLineBufferIndex(0);
@@ -65,15 +69,11 @@ public enum State {
 			State ret = this;
 			attach.getBuffer().flip();
 			final int bytesToRead = attach.getPacket().getBodyAmount();
-			int i = 0;
-			byte[] body = attach.getPacket().getBody();
+			ByteBuffer body = attach.getPacket().getBody();
 			while(bytesToRead > 0 && attach.getBuffer().hasRemaining()) {
 				final byte b = attach.getBuffer().get();
-				body[i] = b;
-				i++;
-				System.out.println("--begin-body--");
-				System.out.print(b);
-				System.out.println("--end-body--");
+				body.put(b);
+				attach.incrementPacketSize(1);
 			}
 			ret = State.INIT;
 			return ret;
