@@ -2,10 +2,10 @@ package it.itba.edu.ar.protos.handler;
 
 import it.itba.edu.ar.protos.Interfaces.TCPProtocol;
 import it.itba.edu.ar.protos.attachment.Attachment;
-import it.itba.edu.ar.protos.model.HttpPacket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -46,25 +46,29 @@ public class TCPConnectionHandler implements TCPProtocol  {
 	@Override
 	public void handleWrite(SelectionKey key) throws IOException {
 		Attachment attach = (Attachment) key.attachment();
-		String url = attach.getPacket().getHeader("Host");
-		int port = attach.getPacket().getPort();
-		
-		SocketChannel sc = SocketChannel.open();
-		sc.configureBlocking(false);
-		
-		sc.register(key.selector(), SelectionKey.OP_READ, attach);
-		sc.connect(new InetSocketAddress(url, port));
-		
-		while(!sc.finishConnect());
-		System.out.println("lo que se mando----------------------------------------");
-		for(byte b : attach.getPacket().generatePacket(attach.getPacketSize()).array()) {
-			System.out.print((char)b);
+		SocketChannel server;
+		if((server = attach.getServer()) == null) {
+			String url = attach.getPacket().getHeader("Host");
+			int port = attach.getPacket().getPort();
+			server = SocketChannel.open();
+			server.configureBlocking(false);
+			server.register(key.selector(), SelectionKey.OP_READ, attach);
+			if (!server.connect(new InetSocketAddress(url, port))) {
+				while (!server.finishConnect()) {
+                    System.out.print(".");
+				}
+			}
+			attach.setServer(server);
 		}
-		System.out.println("------------------------------------");
 		
-		sc.write(attach.getPacket().generatePacket(attach.getPacketSize()));
+		SocketChannel sender = attach.getSender();
+		SocketChannel receiver = attach.getOposite(sender);
 		
-		sc.register(key.selector(), SelectionKey.OP_READ, new Attachment());
+
+		ByteBuffer packet = attach.getPacket().generatePacket(attach.getPacketSize());
+		receiver.write(packet);
+		receiver.register(key.selector(), SelectionKey.OP_READ, attach); // receiver
+        key.interestOps(SelectionKey.OP_READ);
 	}
 
 }
