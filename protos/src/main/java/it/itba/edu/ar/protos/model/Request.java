@@ -1,7 +1,6 @@
 package it.itba.edu.ar.protos.model;
 
 import java.nio.ByteBuffer;
-import java.util.Set;
 
 public class Request extends HttpPacket{
 	
@@ -27,15 +26,6 @@ public class Request extends HttpPacket{
 			return false;
 		}
 		return true;//TODO implement validator
-	}
-	
-	public boolean parseHeader(String line) {
-		if(line.contains(":")){
-			String[] header = line.split(":");
-			addHeader(header[0].trim(), header[1].trim());
-			return validateHeader(header);
-		}
-		return false;
 	}
 	
 	public boolean validateHeader(String[] header) {
