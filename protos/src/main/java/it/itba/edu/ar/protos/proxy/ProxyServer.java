@@ -1,6 +1,8 @@
 package it.itba.edu.ar.protos.proxy;
+
 import it.itba.edu.ar.protos.Interfaces.TCPProtocol;
 import it.itba.edu.ar.protos.handler.TCPConnectionHandler;
+import it.itba.edu.ar.protos.resources.ProxyProperties;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,49 +13,49 @@ import java.util.Iterator;
 
 public class ProxyServer {
 
-    private static final int TIMEOUT = 3000; // Wait timeout (milliseconds)
+	private static final int TIMEOUT = 3000; // Wait timeout (milliseconds)
 
-    public static void main(String[] args) throws IOException {
-//        if (args.length != 1) {
-//            throw new IllegalArgumentException("Parameter(s): <Port> ...");
-//        }
-//        String port = args[0];
-        
-        Selector selector = Selector.open();
-        ServerSocketChannel listnChannel = ServerSocketChannel.open();
-        listnChannel.socket().bind(new InetSocketAddress(1234));
-        listnChannel.configureBlocking(false); 
-        listnChannel.register(selector, SelectionKey.OP_ACCEPT);
-        TCPProtocol protocol = new TCPConnectionHandler();
-        try {
-        while (true) { 
-            if (selector.select(TIMEOUT) == 0) {
-                System.out.println(".");
-                continue;
-            }
-            Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
-            while (keyIter.hasNext()) {
-                SelectionKey key = keyIter.next();
-                if (key.isAcceptable()) {
-                	Thread.sleep(3000);
-                	System.out.println("\nA");
-                    protocol.handleAccept(key);
-                }
-                if (key.isReadable()) {
-                	Thread.sleep(3000);
-                	System.out.println("\nR");
-                    protocol.handleRead(key);
-                }
-                if (key.isValid() && key.isWritable()) {
-                	System.out.println("\nW");
-                	Thread.sleep(3000);
-                    protocol.handleWrite(key);
-                }
-                keyIter.remove();
-            }
-        }
-        } catch(Exception e) {
-        	
-        }
-    }
+	public static void main(String[] args) throws IOException {
+		// if (args.length != 1) {
+		// throw new IllegalArgumentException("Parameter(s): <Port> ...");
+		// }
+		// String port = args[0];
+
+		Selector selector = Selector.open();
+		ServerSocketChannel listnChannel = ServerSocketChannel.open();
+		ProxyProperties properties = new ProxyProperties();
+		listnChannel.socket().bind(
+				new InetSocketAddress(properties.getPortClient()));
+		listnChannel.configureBlocking(false);
+		listnChannel.register(selector, SelectionKey.OP_ACCEPT);
+		TCPProtocol protocol = new TCPConnectionHandler();
+		try {
+			while (true) {
+				if (selector.select(TIMEOUT) == 0) {
+					System.out.println(".");
+					continue;
+				}
+				Iterator<SelectionKey> keyIter = selector.selectedKeys()
+						.iterator();
+				while (keyIter.hasNext()) {
+					SelectionKey key = keyIter.next();
+					if (key.isAcceptable()) {
+						System.out.println("\nA");
+						protocol.handleAccept(key);
+					}
+					if (key.isReadable()) {
+						System.out.println("\nR");
+						protocol.handleRead(key);
+					}
+					if (key.isValid() && key.isWritable()) {
+						System.out.println("\nW");
+						protocol.handleWrite(key);
+					}
+					keyIter.remove();
+				}
+			}
+		} catch (Exception e) {
+
+		}
+	}
 }
