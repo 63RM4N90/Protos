@@ -46,7 +46,7 @@ public class Attachment {
 		buffer = ByteBuffer.allocate(bufferSize);
 	}
 
-	public SocketChannel getOppositeChannel(SocketChannel channel) {
+	public SocketChannel getOpposite(SocketChannel channel) {
 		boolean isserver = channel.socket().getPort() == server.socket()
 				.getPort()
 				&& channel.socket().getInetAddress().getHostName()
@@ -138,4 +138,13 @@ public class Attachment {
 	public String getClientaddr() {
 		return clientaddr;
 	}
+
+	public SocketChannel getSender() {
+		if(server == null) {
+			return client; 
+		} else {
+			return server;
+		}
+	}
+
 }

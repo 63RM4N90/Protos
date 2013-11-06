@@ -7,6 +7,7 @@ import it.itba.edu.ar.protos.model.Request;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -53,6 +54,10 @@ public class TCPConnectionHandler implements TCPProtocol {
 		SocketChannel server;
 		HttpPacket packet = attach.getPacket();
 		System.out.println("IS NULL = " + (attach.getServer() == null));
+
+		SocketChannel sender = attach.getSender();
+		SocketChannel receiver = attach.getOpposite(sender);
+		
 		if((server = attach.getServer()) == null) {
 			URL url = new URL(((Request) packet).getUri());
 			System.out.println("URI = " + url.getHost());
@@ -61,16 +66,16 @@ public class TCPConnectionHandler implements TCPProtocol {
 			server.register(key.selector(), SelectionKey.OP_READ, attach);
 			int port = url.getPort() == -1 ? 80 : url.getPort();
 			System.out.println("CHANNEL PORT = " + url.getPort());
-			if (!server.connect(new InetSocketAddress(url.getHost(), port))) {
+			SocketAddress a = new InetSocketAddress(url.getHost(), port);
+			System.out.println("a");
+			System.out.println(a);
+			if (!server.connect(a)) {
 				while (!server.finishConnect()) {
                     System.out.print(".");
 				}
 			}
 			attach.setServer(server);
 		}
-		
-		SocketChannel sender = attach.getSender();
-		SocketChannel receiver = attach.getOposite(sender);
 		
 
 		ByteBuffer packetBuff = attach.getPacket().generatePacket(attach.getPacketSize());
