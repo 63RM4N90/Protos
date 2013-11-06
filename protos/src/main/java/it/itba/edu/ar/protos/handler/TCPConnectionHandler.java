@@ -50,38 +50,34 @@ public class TCPConnectionHandler implements TCPProtocol {
 	@Override
 	public void handleWrite(SelectionKey key) throws IOException {
 		Attachment attach = (Attachment) key.attachment();
-		SocketChannel channel = (SocketChannel) key.channel();
-		HttpPacket message = attach.getPacket();
-		SocketChannel serverchannel;
+		SocketChannel server;
+		HttpPacket packet = attach.getPacket();
 		System.out.println("IS NULL = " + (attach.getServer() == null));
-		if ((serverchannel = attach.getServer()) == null) {
-			URL uri = new URL(((Request) message).getUri());
-			System.out.println("URI = " + uri.getHost());
-			serverchannel = SocketChannel.open();
-			serverchannel.configureBlocking(false);
-			serverchannel
-					.register(key.selector(), SelectionKey.OP_READ, attach);
-			int port = uri.getPort() == -1 ? 80 : uri.getPort();
-			System.out.println("CHANNEL PORT = " + uri.getPort());
-			if (!serverchannel.connect(new InetSocketAddress(uri.getHost(),
-					port))) {
-				while (!serverchannel.finishConnect()) {
-					System.out.print(".");
+		if((server = attach.getServer()) == null) {
+			URL url = new URL(((Request) packet).getUri());
+			System.out.println("URI = " + url.getHost());
+			server = SocketChannel.open();
+			server.configureBlocking(false);
+			server.register(key.selector(), SelectionKey.OP_READ, attach);
+			int port = url.getPort() == -1 ? 80 : url.getPort();
+			System.out.println("CHANNEL PORT = " + url.getPort());
+			if (!server.connect(new InetSocketAddress(url.getHost(), port))) {
+				while (!server.finishConnect()) {
+                    System.out.print(".");
 				}
 			}
-			attach.setServer(serverchannel);
+			attach.setServer(server);
 		}
-		// System.out.println("\nASDF");
-		// System.out.println("content = "
-		// + new String(attach.getPacket()
-		// .generatePacket(attach.getPacketSize()).array()));
-		SocketChannel receiver = attach.getOppositeChannel(channel);
-		ByteBuffer buf = attach.getPacket().generatePacket(
-				attach.getPacketSize());
-		buf.flip();
-		System.out.println(new String(buf.array()));
-		receiver.write(buf);
-		receiver.register(key.selector(), SelectionKey.OP_READ, attach);
-		key.interestOps(SelectionKey.OP_READ);
+		
+		SocketChannel sender = attach.getSender();
+		SocketChannel receiver = attach.getOposite(sender);
+		
+
+		ByteBuffer packetBuff = attach.getPacket().generatePacket(attach.getPacketSize());
+		packetBuff.flip();
+		System.out.println(new String(packetBuff.array()));
+		receiver.write(packetBuff);
+		receiver.register(key.selector(), SelectionKey.OP_READ, attach); // receiver
+        key.interestOps(SelectionKey.OP_READ);
 	}
 }
