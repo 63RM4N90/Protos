@@ -21,26 +21,9 @@ public abstract class HttpPacket {
 	}
 
 	public boolean parseHeader(String line) {
-		if (line.contains(":")) {
-			String trimmedLine = line.trim();
-			String[] header = trimmedLine.split(":");
-			if (line.contains("Cookie")) {
-				String content = "";
-				for (int i = 1; i < header.length; i++) {
-					if (i != header.length - 1) {
-						content += header[i] + ":";
-					} else {
-						content += header[i];
-					}
-				}
-				addHeader(header[0], content);
-			} else {
-				//TODO: Posible .trim() en header[1]
-				addHeader(header[0], header[1]);
-			}
-			return validateHeader(header);
-		}
-		return false;
+		String headerAndValue[] = line.split(":", 2);
+		headers.put(headerAndValue[0] + ":", headerAndValue[1]);
+		return true;
 	}
 
 	public boolean validateHeader(String[] header) {
