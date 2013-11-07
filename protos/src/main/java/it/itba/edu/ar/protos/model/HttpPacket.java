@@ -1,7 +1,7 @@
 package it.itba.edu.ar.protos.model;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public abstract class HttpPacket {
 	protected int port;
 
 	public HttpPacket() {
-		headers = new HashMap<String, String>();
+		headers = new LinkedHashMap<String, String>();
 		byteAmount = 0;
 		hasBody = false;
 	}
@@ -35,6 +35,7 @@ public abstract class HttpPacket {
 				}
 				addHeader(header[0], content);
 			} else {
+				//TODO: Posible .trim() en header[1]
 				addHeader(header[0], header[1]);
 			}
 			return validateHeader(header);
@@ -57,6 +58,10 @@ public abstract class HttpPacket {
 
 	public String getHeader(String headerKey) {
 		return headers.get(headerKey);
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
 	}
 
 	public Set<String> getHeaderNames() {
@@ -105,7 +110,7 @@ public abstract class HttpPacket {
 		System.out.println("entre");
 		ByteBuffer packet = ByteBuffer.allocate(size);
 		generateFirstLine(packet);
-		
+
 		Set<String> headers = getHeaderNames();
 		for (String h : headers) {
 			packet.put(h.getBytes());
@@ -122,4 +127,10 @@ public abstract class HttpPacket {
 	}
 
 	public abstract void generateFirstLine(ByteBuffer packet);
+
+	public void printHeaderMap() {
+		for (Map.Entry<String, String> entry : headers.entrySet()) {
+			System.out.println(entry.getKey() + ":" + entry.getValue());
+		}
+	}
 }
