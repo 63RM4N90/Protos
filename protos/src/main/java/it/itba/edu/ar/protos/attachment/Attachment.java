@@ -19,10 +19,10 @@ public class Attachment {
 	private SocketChannel server;
 	private SocketChannel client;
 
-	private int serverport;
-	private int clientport;
-	private String serveraddr;
-	private String clientaddr;
+	private int serverPort;
+	private int clientPort;
+	private String serverAddr;
+	private String clientAddr;
 
 	private int bufferSize = 1024;
 
@@ -34,24 +34,27 @@ public class Attachment {
 
 	public void setServer(SocketChannel server) {
 		this.server = server;
-		serverport = server.socket().getPort();
-		serveraddr = server.socket().getInetAddress().getHostName();
+		serverPort = server.socket().getPort();
+		serverAddr = server.socket().getInetAddress().getHostName();
 		buffer = ByteBuffer.allocate(bufferSize);
 	}
 
 	public void setClient(SocketChannel client) {
 		this.client = client;
-		clientport = client.socket().getPort();
-		clientaddr = client.socket().getInetAddress().getHostName();
+		clientPort = client.socket().getPort();
+		clientAddr = client.socket().getInetAddress().getHostName();
 		buffer = ByteBuffer.allocate(bufferSize);
 	}
 
-	public SocketChannel getOppositeChannel(SocketChannel channel) {
-		boolean isserver = channel.socket().getPort() == server.socket()
-				.getPort()
+	public SocketChannel getOpposite(SocketChannel channel) {
+		boolean isserver = channel.socket().getPort() == server.socket().getPort()
 				&& channel.socket().getInetAddress().getHostName()
 						.equals(server.socket().getInetAddress().getHostName());
 		return isserver ? client : server;
+	}
+
+	public void setServerport(int serverport) {
+		this.serverPort = serverport;
 	}
 
 	public void determinePacketType(String op) {
@@ -124,18 +127,39 @@ public class Attachment {
 	}
 
 	public int getServerport() {
-		return serverport;
+		return serverPort;
 	}
 
-	public int getClientport() {
-		return clientport;
+	public int getClientPort() {
+		return clientPort;
+	}
+
+	public String getClientAddr() {
+		return clientAddr;
+	}
+
+	public int getServerPort() {
+		return serverPort;
+	}
+
+	public String getServerAddr() {
+		return serverAddr;
 	}
 
 	public String getServeraddr() {
-		return serveraddr;
+		return serverAddr;
 	}
 
 	public String getClientaddr() {
-		return clientaddr;
+		return clientAddr;
 	}
+
+	public SocketChannel getSender() {
+		if(server == null) {
+			return client; 
+		} else {
+			return server;
+		}
+	}
+
 }

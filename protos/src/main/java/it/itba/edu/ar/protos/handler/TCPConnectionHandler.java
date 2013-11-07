@@ -7,6 +7,7 @@ import it.itba.edu.ar.protos.model.Request;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -19,48 +20,49 @@ public class TCPConnectionHandler implements TCPProtocol {
 	public void handleAccept(SelectionKey key) throws IOException {
 		SocketChannel clntChan = ((ServerSocketChannel) key.channel()).accept();
 		clntChan.configureBlocking(false);
-		clntChan.register(key.selector(), SelectionKey.OP_READ,
-				new Attachment());
+		Attachment attach = new Attachment();
+		attach.setClient(clntChan);
+		clntChan.register(key.selector(), SelectionKey.OP_READ,attach);
 	}
 
 	@Override
 	public void handleRead(SelectionKey key) throws IOException {
-		SocketChannel clnChan = (SocketChannel) key.channel();
+		SocketChannel sender = (SocketChannel) key.channel();
 		Attachment attach = (Attachment) key.attachment();
+		
 		while (attach.getBuffer().hasRemaining()) {
-			long bytesread = clnChan.read(attach.getBuffer());
+			long bytesread = sender.read(attach.getBuffer());
 			if (bytesread == -1) {
 				System.out.println("te cierro el channel");
-				clnChan.close();
+				sender.close();
 				break;
 			} else {
 				if (attach.getState() == State.BODY
 						&& !attach.getPacket().hasBody()) {
 					break;
 				}
-				attach.setState(attach.getState().handleRead(clnChan, attach));
+				attach.setState(attach.getState().handleRead(sender, attach));
 			}
 		}
 
 		attach.setState(State.INIT);
 		key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-		clnChan.register(key.selector(), SelectionKey.OP_WRITE, attach);
+		sender.register(key.selector(), SelectionKey.OP_WRITE, attach);
 	}
 
 	@Override
 	public void handleWrite(SelectionKey key) throws IOException {
+		SocketChannel receiver = (SocketChannel)key.channel();
 		Attachment attach = (Attachment) key.attachment();
-		SocketChannel server;
 		HttpPacket packet = attach.getPacket();
-		System.out.println("IS NULL = " + (attach.getServer() == null));
+
+		SocketChannel server;
 		if((server = attach.getServer()) == null) {
 			URL url = new URL(((Request) packet).getUri());
-			System.out.println("URI = " + url.getHost());
 			server = SocketChannel.open();
 			server.configureBlocking(false);
 			server.register(key.selector(), SelectionKey.OP_READ, attach);
 			int port = url.getPort() == -1 ? 80 : url.getPort();
-			System.out.println("CHANNEL PORT = " + url.getPort());
 			if (!server.connect(new InetSocketAddress(url.getHost(), port))) {
 				while (!server.finishConnect()) {
                     System.out.print(".");
@@ -69,14 +71,11 @@ public class TCPConnectionHandler implements TCPProtocol {
 			attach.setServer(server);
 		}
 		
-		SocketChannel sender = attach.getSender();
-		SocketChannel receiver = attach.getOposite(sender);
-
-		ByteBuffer packetBuff = attach.getPacket().generatePacket(attach.getPacketSize());
+		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
 		packetBuff.flip();
 		System.out.println(new String(packetBuff.array()));
 		receiver.write(packetBuff);
-		receiver.register(key.selector(), SelectionKey.OP_READ, attach); // receiver
-        key.interestOps(SelectionKey.OP_READ);
+		receiver.register(key.selector(), SelectionKey.OP_READ, attach);
+		key.interestOps(SelectionKey.OP_READ);
 	}
 }

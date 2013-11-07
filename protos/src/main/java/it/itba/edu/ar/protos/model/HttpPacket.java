@@ -102,9 +102,10 @@ public abstract class HttpPacket {
 	}
 
 	public ByteBuffer generatePacket(int size) {
+		System.out.println("entre");
 		ByteBuffer packet = ByteBuffer.allocate(size);
 		generateFirstLine(packet);
-
+		
 		Set<String> headers = getHeaderNames();
 		for (String h : headers) {
 			packet.put(h.getBytes());
@@ -112,6 +113,7 @@ public abstract class HttpPacket {
 			packet.put(getHeader(h).getBytes());
 			packet.put("\r\n".getBytes());
 		}
+		System.out.println("pase");
 		packet.put("\r\n".getBytes());
 		if (hasBody) {
 			packet.put(getBody());

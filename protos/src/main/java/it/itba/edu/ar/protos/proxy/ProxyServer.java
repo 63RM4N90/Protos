@@ -29,33 +29,29 @@ public class ProxyServer {
 		listnChannel.configureBlocking(false);
 		listnChannel.register(selector, SelectionKey.OP_ACCEPT);
 		TCPProtocol protocol = new TCPConnectionHandler();
-		try {
-			while (true) {
-				if (selector.select(TIMEOUT) == 0) {
-					System.out.println(".");
-					continue;
-				}
-				Iterator<SelectionKey> keyIter = selector.selectedKeys()
-						.iterator();
-				while (keyIter.hasNext()) {
-					SelectionKey key = keyIter.next();
-					if (key.isAcceptable()) {
-						System.out.println("\nA");
-						protocol.handleAccept(key);
-					}
-					if (key.isReadable()) {
-						System.out.println("\nR");
-						protocol.handleRead(key);
-					}
-					if (key.isValid() && key.isWritable()) {
-						System.out.println("\nW");
-						protocol.handleWrite(key);
-					}
-					keyIter.remove();
-				}
+		while (true) {
+			if (selector.select(TIMEOUT) == 0) {
+				System.out.println(".");
+				continue;
 			}
-		} catch (Exception e) {
-
+			Iterator<SelectionKey> keyIter = selector.selectedKeys()
+					.iterator();
+			while (keyIter.hasNext()) {
+				SelectionKey key = keyIter.next();
+				if (key.isAcceptable()) {
+					System.out.println("\nA");
+					protocol.handleAccept(key);
+				}
+				if (key.isReadable()) {
+					System.out.println("\nR");
+					protocol.handleRead(key);
+				}
+				if (key.isValid() && key.isWritable()) {
+					System.out.println("\nW");
+					protocol.handleWrite(key);
+				}
+				keyIter.remove();
+			}
 		}
 	}
 }
