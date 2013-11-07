@@ -64,9 +64,7 @@ public class TCPConnectionHandler implements TCPProtocol {
 			server.register(key.selector(), SelectionKey.OP_READ, attach);
 			int port = url.getPort() == -1 ? 80 : url.getPort();
 			if (!server.connect(new InetSocketAddress(url.getHost(), port))) {
-				while (!server.finishConnect()) {
-                    System.out.print(".");
-				}
+				while (!server.finishConnect());
 			}
 			attach.setServer(server);
 		}
@@ -74,6 +72,7 @@ public class TCPConnectionHandler implements TCPProtocol {
 		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
 		packetBuff.flip();
 		System.out.println(new String(packetBuff.array()));
+		System.out.println("---------------------------------------------");
 		receiver.write(packetBuff);
 		receiver.register(key.selector(), SelectionKey.OP_READ, attach);
 		key.interestOps(SelectionKey.OP_READ);
