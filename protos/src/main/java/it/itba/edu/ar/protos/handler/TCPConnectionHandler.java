@@ -33,7 +33,6 @@ public class TCPConnectionHandler implements TCPProtocol {
 		while (attach.getBuffer().hasRemaining()) {
 			long bytesread = sender.read(attach.getBuffer());
 			if (bytesread == -1) {
-				System.out.println("te cierro el channel");
 				sender.close();
 				break;
 			} else {
@@ -47,7 +46,9 @@ public class TCPConnectionHandler implements TCPProtocol {
 
 		attach.setState(State.INIT);
 		key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-		sender.register(key.selector(), SelectionKey.OP_WRITE, attach);
+		if(sender.isOpen()) {
+			sender.register(key.selector(), SelectionKey.OP_WRITE, attach);
+		}
 	}
 
 	@Override
@@ -71,8 +72,6 @@ public class TCPConnectionHandler implements TCPProtocol {
 		
 		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
 		packetBuff.flip();
-		System.out.println(new String(packetBuff.array()));
-		System.out.println("---------------------------------------------");
 		receiver.write(packetBuff);
 		receiver.register(key.selector(), SelectionKey.OP_READ, attach);
 		key.interestOps(SelectionKey.OP_READ);

@@ -22,8 +22,7 @@ public abstract class HttpPacket {
 
 	public boolean parseHeader(String line) {
 		String headerAndValue[] = line.split(":", 2);
-		System.out.println(headerAndValue[0].toLowerCase());
-		headers.put(headerAndValue[0].toLowerCase() + ":", headerAndValue[1]);
+		headers.put(headerAndValue[0].toLowerCase(), headerAndValue[1].trim());
 		return true;
 	}
 
@@ -38,13 +37,8 @@ public abstract class HttpPacket {
 
 	public String getHeader(String headerKey) {
 		String key = headerKey.toLowerCase();
-		System.out.println("--------");
-		System.out.println(key);
 		for(String k : headers.keySet()) {
-			System.out.println(k);
 		}
-		System.out.println(headers.get(key));
-		System.out.println("--------");
 		return headers.get(key);
 	}
 
@@ -102,6 +96,7 @@ public abstract class HttpPacket {
 		for (String h : headers) {
 			packet.put(h.getBytes());
 			packet.put(":".getBytes());
+			
 			packet.put(getHeader(h).getBytes());
 			packet.put("\r\n".getBytes());
 		}
@@ -115,7 +110,6 @@ public abstract class HttpPacket {
 
 	public void printHeaderMap() {
 		for (Map.Entry<String, String> entry : headers.entrySet()) {
-			System.out.println(entry.getKey() + ":" + entry.getValue());
 		}
 	}
 }
