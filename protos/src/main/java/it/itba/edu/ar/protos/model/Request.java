@@ -77,6 +77,7 @@ public class Request extends HttpPacket{
 		packet.put(" ".getBytes());
 		packet.put(uri.getBytes());
 		packet.put(" ".getBytes());
-		packet.put(getHttpVersion().getBytes());
+		packet.put(getHttpVersion().trim().getBytes());
+		packet.put("\r\n".getBytes());
 	}
 }

@@ -16,7 +16,7 @@ public enum State {
 		        final byte c = attach.getBuffer().get();
 		        if(c == '\n') {
 		            final String operation = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
-		            attach.incrementPacketSize(operation.length() + 2);
+		            attach.incrementPacketSize(operation.length()+1);
 		            attach.setLineBufferIndex(0);
 		            ret = State.HEADERS;
 		            attach.determinePacketType(operation);
@@ -46,7 +46,7 @@ public enum State {
 						attach.incrementPacketSize(2);
 					} else {
 						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex() - 1);
-						attach.incrementPacketSize(header.length() + 2);
+						attach.incrementPacketSize(header.length() + 1);
 						attach.getPacket().parseHeader(header);
 					}
 					attach.setLineBufferIndex(0);

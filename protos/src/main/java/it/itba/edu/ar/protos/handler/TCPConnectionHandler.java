@@ -72,8 +72,12 @@ public class TCPConnectionHandler implements TCPProtocol {
 		
 		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
 		packetBuff.flip();
+		System.out.println("packetBuff");
+		for(byte b : packetBuff.array()) {
+			System.out.print((char)b);
+		}
 		receiver.write(packetBuff);
+		key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
 		receiver.register(key.selector(), SelectionKey.OP_READ, attach);
-		key.interestOps(SelectionKey.OP_READ);
 	}
 }
