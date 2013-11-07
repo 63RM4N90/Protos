@@ -47,7 +47,9 @@ public class TCPConnectionHandler implements TCPProtocol {
 
 		attach.setState(State.INIT);
 		key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-		sender.register(key.selector(), SelectionKey.OP_WRITE, attach);
+		if(sender.isOpen()) {
+			sender.register(key.selector(), SelectionKey.OP_WRITE, attach);
+		}
 	}
 
 	@Override
