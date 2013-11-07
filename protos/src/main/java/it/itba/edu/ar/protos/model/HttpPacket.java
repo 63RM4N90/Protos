@@ -1,7 +1,7 @@
 package it.itba.edu.ar.protos.model;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,14 +15,15 @@ public abstract class HttpPacket {
 	protected int port;
 
 	public HttpPacket() {
-		headers = new LinkedHashMap<String, String>();
+		headers = new HashMap<String, String>();
 		byteAmount = 0;
 		hasBody = false;
 	}
 
 	public boolean parseHeader(String line) {
 		String headerAndValue[] = line.split(":", 2);
-		headers.put(headerAndValue[0] + ":", headerAndValue[1]);
+		System.out.println(headerAndValue[0].toLowerCase());
+		headers.put(headerAndValue[0].toLowerCase() + ":", headerAndValue[1]);
 		return true;
 	}
 
@@ -35,13 +36,15 @@ public abstract class HttpPacket {
 	 * methods used to handle headers
 	 */
 
-	public void addHeader(String key, String value) {
-		
-		headers.put(key.trim().toLowerCase(), value);
-	}
-
 	public String getHeader(String headerKey) {
 		String key = headerKey.toLowerCase();
+		System.out.println("--------");
+		System.out.println(key);
+		for(String k : headers.keySet()) {
+			System.out.println(k);
+		}
+		System.out.println(headers.get(key));
+		System.out.println("--------");
 		return headers.get(key);
 	}
 
