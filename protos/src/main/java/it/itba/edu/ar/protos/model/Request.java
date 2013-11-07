@@ -61,6 +61,9 @@ public class Request extends HttpPacket{
 	}
 	
 	public String getUri(){
+		if(uri.startsWith("/")){
+			return getHeader("host") + uri;
+		}
 		return uri;
 	}
 	
