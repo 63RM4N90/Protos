@@ -53,11 +53,13 @@ public abstract class HttpPacket {
 	 */
 
 	public void addHeader(String key, String value) {
-		headers.put(key, value);
+		
+		headers.put(key.trim().toLowerCase(), value);
 	}
 
 	public String getHeader(String headerKey) {
-		return headers.get(headerKey);
+		String key = headerKey.toLowerCase();
+		return headers.get(key);
 	}
 
 	public Map<String, String> getHeaders() {
@@ -114,7 +116,7 @@ public abstract class HttpPacket {
 		Set<String> headers = getHeaderNames();
 		for (String h : headers) {
 			packet.put(h.getBytes());
-			packet.put(": ".getBytes());
+			packet.put(":".getBytes());
 			packet.put(getHeader(h).getBytes());
 			packet.put("\r\n".getBytes());
 		}
