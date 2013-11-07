@@ -1,7 +1,7 @@
 package it.itba.edu.ar.protos.model;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public abstract class HttpPacket {
 	protected int port;
 
 	public HttpPacket() {
-		headers = new HashMap<String, String>();
+		headers = new LinkedHashMap<String, String>();
 		byteAmount = 0;
 		hasBody = false;
 	}
