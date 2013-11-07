@@ -22,7 +22,7 @@ public abstract class HttpPacket {
 
 	public boolean parseHeader(String line) {
 		String headerAndValue[] = line.split(":", 2);
-		headers.put(headerAndValue[0] + ":", headerAndValue[1]);
+		headers.put(headerAndValue[0], headerAndValue[1]);
 		return true;
 	}
 
