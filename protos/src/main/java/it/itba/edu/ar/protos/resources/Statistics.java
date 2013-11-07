@@ -10,7 +10,7 @@ public class Statistics {
 	// Ejemplo: <10/08/1990 15:25:25.226, 192.168.0.1>
 	private Map<String, String> accesses = new LinkedHashMap<String, String>();
 
-	// Ejemplo: <192.168.0.1, 1237512736512376B>
+	// Ejemplo: <http://www.google.com, 1237512736512376B>
 	private Map<String, Long> transferedBytes = new LinkedHashMap<String, Long>();
 
 	// Ejemplo: <400, 15>
@@ -36,18 +36,18 @@ public class Statistics {
 		return instance;
 	}
 
-	public void addConnection(String ip) {
+	public void addConnection(String url) {
 		Date currentDate = new Date();
 		String stringFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.S")
 				.format(currentDate);
-		accesses.put(stringFormat, ip);
+		accesses.put(stringFormat, url);
 	}
 
-	public void addTransferedBytes(String ip, Long bytes) {
-		if (transferedBytes.containsKey(ip)) {
-			transferedBytes.put(ip, transferedBytes.get(ip) + bytes);
+	public void addTransferedBytes(String url, Long bytes) {
+		if (transferedBytes.containsKey(url)) {
+			transferedBytes.put(url, transferedBytes.get(url) + bytes);
 		} else {
-			transferedBytes.put(ip, bytes);
+			transferedBytes.put(url, bytes);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class Statistics {
 
 		html.append(accesses.entrySet().size());
 
-		html.append("</div><div>Access per ip:<br/>");
+		html.append("</div><div>Access per url:<br/>");
 
 		for (Map.Entry<String, String> entry : accesses.entrySet()) {
 			html.append(entry.getKey() + " = " + entry.getValue() + "<br/>");
