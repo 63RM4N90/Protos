@@ -68,8 +68,9 @@ public class TCPConnectionHandler implements TCPProtocol {
 			}
 			attach.setServer(server);
 		}
-		
-		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
+		System.out.println("attach.getPacket");
+		System.out.println(attach.getPacketSize());
+		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize() + 1346);
 		packetBuff.flip();
 		SocketChannel receiver = attach.getOpposite(sender);
 		receiver.write(packetBuff);

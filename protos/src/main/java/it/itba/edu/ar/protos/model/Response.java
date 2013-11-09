@@ -36,7 +36,12 @@ public class Response extends HttpPacket {
 	}
 	
 	public boolean validateHeader(String[] header) {
-		return true;//TODO implement validator
+		if(header[0].toLowerCase().contains("content-length")) {
+			initializeBody(Integer.parseInt(header[1].trim()));
+			System.out.println("length");
+			System.out.println(header[1]);
+		}
+		return true;
 	}
 
 	public boolean parseContent(Data data) {
