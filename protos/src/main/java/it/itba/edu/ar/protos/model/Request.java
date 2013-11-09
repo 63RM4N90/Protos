@@ -44,11 +44,6 @@ public class Request extends HttpPacket{
 		}
 		return true;
 	}
-
-	public boolean parseContent(Data data) {
-		//TODO y aca que carajo hacemooo
-		return false;
-	}
 	
 	//esto porhay vuela
 	

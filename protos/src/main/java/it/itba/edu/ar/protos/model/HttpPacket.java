@@ -5,20 +5,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This is an abstract class that represents an HTTP packet, both request and
+ * response. The subclasses implement more specific methods.
+ * 
+ */
 public abstract class HttpPacket {
 	private Map<String, String> headers;
-	protected boolean hasBody;
-	private int byteAmount;
-	private Data content;
 	private String httpVersion;
 	private ByteBuffer body;
 	protected int port;
 
 	public HttpPacket() {
 		headers = new LinkedHashMap<String, String>();
-		byteAmount = 0;
-		hasBody = false;
-
 	}
 
 	public boolean parseHeader(String line) {
@@ -101,7 +100,7 @@ public abstract class HttpPacket {
 			packet.put("\r\n".getBytes());
 		}
 		packet.put("\r\n".getBytes());
-		if (hasBody) {
+		if (hasBody()) {
 			packet.put(getBody());
 		}
 		return packet;

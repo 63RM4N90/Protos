@@ -2,7 +2,6 @@ package it.itba.edu.ar.protos.handler;
 
 import it.itba.edu.ar.protos.attachment.Attachment;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public enum State {

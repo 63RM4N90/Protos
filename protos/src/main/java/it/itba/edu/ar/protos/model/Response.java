@@ -39,11 +39,6 @@ public class Response extends HttpPacket {
 		return true;//TODO implement validator
 	}
 
-	public boolean parseContent(Data data) {
-		//TODO y aca que carajo hacemooo
-		return false;
-	}
-
 	@Override
 	public void generateFirstLine(ByteBuffer packet) {
 		// TODO Auto-generated method stub
