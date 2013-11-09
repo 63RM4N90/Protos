@@ -49,4 +49,5 @@ public class Response extends HttpPacket {
 		// TODO Auto-generated method stub
 		
 	}
+	
 }

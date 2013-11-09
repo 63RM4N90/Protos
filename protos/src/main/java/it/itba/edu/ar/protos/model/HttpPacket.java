@@ -60,7 +60,10 @@ public abstract class HttpPacket {
 	}
 
 	public boolean hasBody() {
-		return hasBody;
+		if(headers.containsKey("content-length")) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean parseFirstLine(String operation) {
