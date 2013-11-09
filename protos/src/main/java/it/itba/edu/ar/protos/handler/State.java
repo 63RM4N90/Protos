@@ -41,11 +41,11 @@ public enum State {
 			while (attach.getBuffer().hasRemaining()) {
 				final byte c = attach.getBuffer().get();
 				if (c == '\n') {
-					if (attach.getLineBufferIndex() == 1) {
+					if (attach.getLineBufferIndex() == 1 || attach.getLineBufferIndex() == 0) {
 						ret = State.BODY;
 						attach.incrementPacketSize(2);
 					} else {
-						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex() - 1);
+						final String header = new String(attach.getLineBuffer(), 0, attach.getLineBufferIndex());
 						attach.incrementPacketSize(header.length() + 1);
 						attach.getPacket().parseHeader(header);
 					}
