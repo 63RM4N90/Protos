@@ -5,9 +5,16 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * This is a singleton used to record statistics to monitor the functionality of
+ * the proxy server. The amount of accesses mede on a certain date to a specific
+ * url, the amount of bytes transfered from a specific url and the status codes
+ * got in the past can be recorded with this object.
+ * 
+ */
 public class Statistics {
 	private static Statistics instance;
-	// Ejemplo: <10/08/1990 15:25:25.226, 192.168.0.1>
+	// Ejemplo: <10/08/1990 15:25:25.226, http://www.google.com>
 	private Map<String, String> accesses = new LinkedHashMap<String, String>();
 
 	// Ejemplo: <http://www.google.com, 1237512736512376B>
@@ -16,18 +23,46 @@ public class Statistics {
 	// Ejemplo: <400, 15>
 	private Map<String, Long> statusCodes = new LinkedHashMap<String, Long>();
 
+	/**
+	 * Returns a map that contains as key a specific url, and as value the
+	 * amount of times users accessed such url.
+	 * 
+	 * @return A map that contains as key a specific url, and as value the
+	 *         amount of times users accessed such url.
+	 */
 	public Map<String, String> getAccesses() {
 		return accesses;
 	}
 
+	/**
+	 * Returns a map that contains as key a specific url, and as value the
+	 * amount of bytes transfered by such url.
+	 * 
+	 * @return A map that contains as key a specific url, and as value the
+	 *         amount of bytes transfered by such url.
+	 */
 	public Map<String, Long> getTransferedBytes() {
 		return transferedBytes;
 	}
 
+	/**
+	 * Returns a map that contains as key the status code, and as value the
+	 * amount of times that a response gave such status code.
+	 * 
+	 * @return A map that contains as key the status code, and as value the
+	 *         amount of times that a response gave such status code.
+	 */
 	public Map<String, Long> getStatusCodes() {
 		return statusCodes;
 	}
 
+	/**
+	 * Returns an instance of a Statistics object. Because this object is
+	 * implemented under the singleton pattern, this is the way to obtain an
+	 * instance of this class.
+	 * 
+	 * @return an instance of a Statistics object.
+	 */
 	public static Statistics getInstance() {
 		if (instance == null) {
 			instance = new Statistics();
@@ -36,6 +71,13 @@ public class Statistics {
 		return instance;
 	}
 
+	/**
+	 * Increments the amount of times the url parameter has been accessed.
+	 * 
+	 * @param url
+	 *            A String containing the url of the site with which the proxy
+	 *            is going to establish a connection.
+	 */
 	public void addConnection(String url) {
 		Date currentDate = new Date();
 		String stringFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.S")
@@ -43,6 +85,16 @@ public class Statistics {
 		accesses.put(stringFormat, url);
 	}
 
+	/**
+	 * Increment by bytes amount the amount of bytes transfered by the url
+	 * parameter.
+	 * 
+	 * @param url
+	 *            A String containing the url of the site with which the proxy
+	 *            is going to establish a connection.
+	 * @param bytes
+	 *            the amount of bytes transfered by the url site.
+	 */
 	public void addTransferedBytes(String url, Long bytes) {
 		if (transferedBytes.containsKey(url)) {
 			transferedBytes.put(url, transferedBytes.get(url) + bytes);
@@ -51,6 +103,13 @@ public class Statistics {
 		}
 	}
 
+	/**
+	 * Increments the amount of times the status code parameter has been
+	 * returned.
+	 * 
+	 * @param code
+	 *            The status code to be added to the register.
+	 */
 	public void addStatusCode(String code) {
 		statusCodes.put(code, statusCodes.get(code) + 1);
 	}
@@ -103,6 +162,13 @@ public class Statistics {
 		statusCodes.put("511", new Long(0));
 	}
 
+	/**
+	 * Returns a String containing the data collected by the Statistics
+	 * singleton at the time in a Json format.
+	 * 
+	 * @return A String containing the data collected by the Statistics
+	 *         singleton at the time in a Json format.
+	 */
 	public String getJsonStatistics() {
 
 		StringBuffer html = new StringBuffer("{\n");
@@ -140,6 +206,13 @@ public class Statistics {
 		return html.substring(0);
 	}
 
+	/**
+	 * Returns a String containing the data collected by the Statistics
+	 * singleton at the time in an HTML format.
+	 * 
+	 * @return A String containing the data collected by the Statistics
+	 *         singleton at the time in an HTML format.
+	 */
 	public String getHTMLStatistics() {
 		StringBuffer html = new StringBuffer(
 				"<html><body><h3>Proxy Statistics:</h3><div>Total accesses:");
