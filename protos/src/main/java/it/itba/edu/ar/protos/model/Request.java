@@ -36,7 +36,7 @@ public class Request extends HttpPacket{
 			} else {
 				port = 80;
 			}
-		} else if(header[0].toLowerCase().contains("content-type")) {
+		} else if(header[0].toLowerCase().contains("content-length")) {
 			hasBody = true;
 			initializeBody(Integer.parseInt(header[1].trim()));
 		} else if(header.length != 2 ) {

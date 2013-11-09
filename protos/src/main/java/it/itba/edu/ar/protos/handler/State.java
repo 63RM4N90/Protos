@@ -66,10 +66,9 @@ public enum State {
 			State ret = this;
 			attach.getBuffer().flip();
 			final int bytesToRead = attach.getPacket().getBodyAmount();
-			ByteBuffer body = attach.getPacket().getBody();
 			while(bytesToRead > 0 && attach.getBuffer().hasRemaining()) {
 				final byte b = attach.getBuffer().get();
-				body.put(b);
+				attach.getPacket().addBody(b);
 				attach.incrementPacketSize(1);
 			}
 			ret = State.INIT;

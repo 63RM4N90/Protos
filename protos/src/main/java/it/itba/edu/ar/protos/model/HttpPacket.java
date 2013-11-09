@@ -18,18 +18,20 @@ public abstract class HttpPacket {
 		headers = new LinkedHashMap<String, String>();
 		byteAmount = 0;
 		hasBody = false;
+
 	}
 
 	public boolean parseHeader(String line) {
 		String headerAndValue[] = line.split(":", 2);
-		headers.put(headerAndValue[0].toLowerCase(), headerAndValue[1].trim());
-		return true;
+		if (validateHeader(headerAndValue)) {
+			headers.put(headerAndValue[0].toLowerCase(),
+					headerAndValue[1].trim());
+			return true;
+		}
+		return false;
 	}
 
-	public boolean validateHeader(String[] header) {
-		/* should not implement */
-		return true;
-	}
+	public abstract boolean validateHeader(String[] header);
 
 	/*
 	 * methods used to handle headers
@@ -37,6 +39,10 @@ public abstract class HttpPacket {
 
 	public String getHeader(String headerKey) {
 		return headers.get(headerKey.toLowerCase());
+	}
+
+	public void addBody(byte b) {
+		body.put(b);
 	}
 
 	public Map<String, String> getHeaders() {
@@ -60,13 +66,10 @@ public abstract class HttpPacket {
 	}
 
 	public boolean hasBody() {
-		return hasBody;
+		return headers.containsKey("content-length");
 	}
 
-	public boolean parseFirstLine(String operation) {
-		/* should not implement */
-		return false;
-	}
+	public abstract boolean parseFirstLine(String operation);
 
 	public int getPort() {
 		return port;
