@@ -105,37 +105,37 @@ public class Statistics {
 
 	public String getJsonStatistics() {
 
-		StringBuffer html = new StringBuffer("{");
-		html.append("\"accesses\": {");
+		StringBuffer html = new StringBuffer("{\n");
+		html.append("\t\"accesses\": {\n");
 
 		for (Map.Entry<String, String> entry : accesses.entrySet()) {
-			html.append("\"");
+			html.append("\t\t\"");
 			html.append(entry.getKey());
 			html.append("\": ");
 			html.append("\"" + entry.getValue() + "\",\n");
 		}
 		html.setLength(html.length() - 2);
-		html.append("},");
+		html.append("\n\t},\n");
 
-		html.append("\"transferedBytes\": {");
+		html.append("\t\"transferedBytes\": {\n");
 		for (Map.Entry<String, Long> entry : transferedBytes.entrySet()) {
-			html.append("\"");
+			html.append("\t\t\"");
 			html.append(entry.getKey());
 			html.append("\": ");
 			html.append("\"" + entry.getValue() + "\",\n");
 		}
 		html.setLength(html.length() - 2);
-		html.append("},");
+		html.append("\n\t},\n");
 
-		html.append("\"statusCodes\": {");
+		html.append("\t\"statusCodes\": {\n");
 		for (Map.Entry<String, Long> entry : statusCodes.entrySet()) {
-			html.append("\"");
+			html.append("\t\t\"");
 			html.append(entry.getKey());
 			html.append("\": ");
 			html.append("\"" + entry.getValue() + "\",\n");
 		}
 		html.setLength(html.length() - 2);
-		html.append("}}");
+		html.append("\n\t}\n}");
 
 		return html.substring(0);
 	}

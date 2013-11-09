@@ -53,7 +53,7 @@ public class TCPConnectionHandler implements TCPProtocol {
 
 	@Override
 	public void handleWrite(SelectionKey key) throws IOException {
-		SocketChannel receiver = (SocketChannel)key.channel();
+		SocketChannel sender = (SocketChannel)key.channel();
 		Attachment attach = (Attachment) key.attachment();
 		HttpPacket packet = attach.getPacket();
 
@@ -72,12 +72,9 @@ public class TCPConnectionHandler implements TCPProtocol {
 		
 		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
 		packetBuff.flip();
-		System.out.println("packetBuff");
-		for(byte b : packetBuff.array()) {
-			System.out.print((char)b);
-		}
+		SocketChannel receiver = attach.getOpposite(sender);
 		receiver.write(packetBuff);
-		key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+		key.interestOps(SelectionKey.OP_READ);
 		receiver.register(key.selector(), SelectionKey.OP_READ, attach);
 	}
 }
