@@ -58,10 +58,13 @@ public class Attachment {
 	}
 
 	public void determinePacketType(String op) {
+		System.out.println("tipo del nuevo paquete:");
 		if (op.startsWith("GET") || op.startsWith("POST")
 				|| op.startsWith("HEAD")) {
+			System.out.println("request");
 			packet = new Request();
 		} else {
+			System.out.println("response");
 			packet = new Response();
 		}
 	}

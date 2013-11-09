@@ -10,6 +10,8 @@ public class Response extends HttpPacket {
 	public boolean parseFirstLine(String first) {
 		int spaces = 0;
 		int startFrom = 0;
+		System.out.println("first line to parse:");
+		System.out.println(first);
 		
 		for(int i=0 ; i<first.length() ; i++) {
 			if(first.charAt(i) == ' ') {
@@ -19,16 +21,14 @@ public class Response extends HttpPacket {
 					break;
 				case 1:
 					status = first.substring(startFrom, i);
-					break;
-				case 2:
-					statusMessage = first.substring(startFrom, i);
-					break;
+					statusMessage = first.substring(i+1, first.length()).trim();
+					return validateFirstLine();
 				}
 				startFrom = i+1;
 				spaces++;
 			}
 		}
-		return validateFirstLine();	
+		return false;	
 	}
 	
 	public boolean validateFirstLine(){
@@ -51,7 +51,13 @@ public class Response extends HttpPacket {
 
 	@Override
 	public void generateFirstLine(ByteBuffer packet) {
-		// TODO Auto-generated method stub
-		
+		packet.put(getHttpVersion().trim().getBytes());
+		packet.put(" ".getBytes());
+		packet.put(status.getBytes());
+		packet.put(" ".getBytes());
+		System.out.println("status message to get:");
+		System.out.println(statusMessage);
+		packet.put(statusMessage.getBytes());
+		packet.put("\r\n".getBytes());
 	}
 }
