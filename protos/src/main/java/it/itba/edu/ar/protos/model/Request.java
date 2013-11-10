@@ -14,7 +14,7 @@ public class Request extends HttpPacket{
 		}
 		method = params[0];
 		uri = params[1];
-		setHttpVersion(params[2]);	
+		setHttpVersion(params[2].trim());	
 		return validateFirstLine();	
 	}
 	

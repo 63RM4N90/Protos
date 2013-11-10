@@ -65,13 +65,18 @@ public enum State {
 		protected State handleRead(SocketChannel channel, Attachment attach) {
 			State ret = this;
 			attach.getBuffer().flip();
-			final int bytesToRead = attach.getPacket().getBodyAmount();
-			while(bytesToRead > 0 && attach.getBuffer().hasRemaining()) {
+			if(!attach.getPacket().hasBody()){
+				return State.INIT;
+			}
+			int bodyBytes = attach.getPacket().getBodyAmount();
+			while(attach.getBuffer().hasRemaining()) {
+				if(bodyBytes == attach.getPacket().getBody().position()){
+					return State.INIT;
+				}
 				final byte b = attach.getBuffer().get();
 				attach.getPacket().addBody(b);
 				attach.incrementPacketSize(1);
 			}
-			ret = State.INIT;
 			return ret;
 
 		}

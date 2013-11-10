@@ -28,18 +28,16 @@ public class TCPConnectionHandler implements TCPProtocol {
 	public void handleRead(SelectionKey key) throws IOException {
 		SocketChannel sender = (SocketChannel) key.channel();
 		Attachment attach = (Attachment) key.attachment();
+		long bytesRead;
 		
-		while (attach.getBuffer().hasRemaining()) {
-			long bytesread = sender.read(attach.getBuffer());
-			if (bytesread == -1) {
+		while ((bytesRead = sender.read(attach.getBuffer())) != 0) {
+			if (bytesRead == -1) {
 				sender.close();
 				break;
 			} else {
-				if (attach.getState() == State.BODY
-						&& !attach.getPacket().hasBody()) {
-					break;
+				while(attach.getBuffer().position()!= 0) {
+					attach.setState(attach.getState().handleRead(sender, attach));
 				}
-				attach.setState(attach.getState().handleRead(sender, attach));
 			}
 		}
 
@@ -68,9 +66,9 @@ public class TCPConnectionHandler implements TCPProtocol {
 			}
 			attach.setServer(server);
 		}
-		System.out.println("attach.getPacket");
+		System.out.println("attach.getPacketSize");
 		System.out.println(attach.getPacketSize());
-		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize() + 1346);
+		ByteBuffer packetBuff = packet.generatePacket(attach.getPacketSize());
 		packetBuff.flip();
 		SocketChannel receiver = attach.getOpposite(sender);
 		receiver.write(packetBuff);

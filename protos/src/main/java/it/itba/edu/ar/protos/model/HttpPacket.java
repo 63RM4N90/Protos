@@ -19,7 +19,6 @@ public abstract class HttpPacket {
 	public boolean parseHeader(String line) {
 		String headerAndValue[] = line.split(":", 2);
 		if (validateHeader(headerAndValue)) {
-			System.out.println("header " + headerAndValue[0]);
 			headers.put(headerAndValue[0].toLowerCase(),
 					headerAndValue[1].trim());
 			return true;
@@ -38,7 +37,9 @@ public abstract class HttpPacket {
 	}
 
 	public void addBody(byte b) {
-		body.put(b);
+		if(body.hasRemaining()) {
+			body.put(b);
+		}
 	}
 
 	public Map<String, String> getHeaders() {
@@ -98,7 +99,7 @@ public abstract class HttpPacket {
 		}
 		packet.put("\r\n".getBytes());
 		if (hasBody()) {
-			System.out.println("tama;i get body " + getBody().capacity());
+			System.out.println("size get body " + getBody().capacity());
 			packet.put(getBody());
 		}
 		return packet;
