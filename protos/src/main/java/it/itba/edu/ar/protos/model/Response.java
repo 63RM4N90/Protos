@@ -31,10 +31,12 @@ public class Response extends HttpPacket {
 		return validateFirstLine();	
 	}
 	
-	public boolean validateFirstLine(){
+	
+	private boolean validateFirstLine(){
 		return true;//TODO implement validator
 	}
 	
+	@Override
 	public boolean validateHeader(String[] header) {
 		return true;//TODO implement validator
 	}
